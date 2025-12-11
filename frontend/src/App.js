@@ -1157,8 +1157,12 @@ function App() {
                 onChange={(e) =>
                   setFormData({ ...formData, mobile_number: formatMobileNumber(e.target.value) })
                 }
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const pastedText = e.clipboardData.getData('text');
+                  setFormData({ ...formData, mobile_number: formatMobileNumber(pastedText) });
+                }}
                 placeholder="10 digit number"
-                maxLength={10}
                 className="bg-zinc-800 border-zinc-700 text-white"
               />
             </div>
@@ -1311,8 +1315,12 @@ function App() {
                 onChange={(e) =>
                   setFormData({ ...formData, mobile_number: formatMobileNumber(e.target.value) })
                 }
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const pastedText = e.clipboardData.getData('text');
+                  setFormData({ ...formData, mobile_number: formatMobileNumber(pastedText) });
+                }}
                 placeholder="10 digit number"
-                maxLength={10}
                 className="bg-zinc-800 border-zinc-700 text-white"
               />
             </div>
