@@ -1,0 +1,134 @@
+{
+  "project_name": "AmruthAI CRM",
+  "design_philosophy": {
+    "name": "Industrial Cyber-Utility",
+    "description": "A high-contrast, data-dense interface inspired by industrial control rooms and brutalist aesthetics. It prioritizes scanability and speed over decoration.",
+    "core_principles": [
+      "Density is Clarity: Use tight spacing to maximize data visibility.",
+      "Color is Signal: Yellow is used ONLY for action and active states. Everything else is monochrome.",
+      "Grid is God: Visible borders and strict alignment create trust."
+    ]
+  },
+  "theme": {
+    "mode": "dark",
+    "colors": {
+      "background": "#09090b",
+      "surface": "#18181b",
+      "surface_highlight": "#27272a",
+      "border": "#27272a",
+      "primary": "#facc15",
+      "primary_foreground": "#000000",
+      "text_main": "#fafafa",
+      "text_muted": "#a1a1aa",
+      "status": {
+        "interest": "#22c55e",
+        "not_interest": "#ef4444",
+        "callback": "#facc15",
+        "no_respond": "#71717a",
+        "switchoff": "#52525b"
+      }
+    },
+    "typography": {
+      "headings": {
+        "family": "Chivo, sans-serif",
+        "weights": ["700", "900"],
+        "usage": "Page titles, Card headers"
+      },
+      "body": {
+        "family": "Manrope, sans-serif",
+        "weights": ["400", "500"],
+        "usage": "General text, form labels"
+      },
+      "mono": {
+        "family": "JetBrains Mono, monospace",
+        "usage": "S.No, Mobile Numbers, IDs"
+      }
+    },
+    "radius": "0px"
+  },
+  "layout_strategy": {
+    "type": "Control Room Grid",
+    "container": "max-w-[1600px] mx-auto p-6",
+    "grid_system": "grid grid-cols-12 gap-4",
+    "spacing": {
+      "section_gap": "gap-8",
+      "component_padding": "p-6"
+    }
+  },
+  "components": {
+    "dashboard_stats": {
+      "style": "Bento Grid",
+      "cards": [
+        {
+          "label": "Total Leads",
+          "icon": "Users",
+          "color": "text-white"
+        },
+        {
+          "label": "Interested",
+          "icon": "CheckCircle2",
+          "color": "text-green-500"
+        },
+        {
+          "label": "Pending Callbacks",
+          "icon": "Phone",
+          "color": "text-yellow-400"
+        },
+        {
+          "label": "No Response",
+          "icon": "XCircle",
+          "color": "text-zinc-500"
+        }
+      ],
+      "visual_style": "bg-zinc-900 border border-zinc-800 hover:border-yellow-500/50 transition-colors duration-300"
+    },
+    "leads_table": {
+      "style": "Dense Spreadsheet",
+      "features": [
+        "Sticky Header",
+        "Visible Grid Lines (border-r border-zinc-800)",
+        "Monospace Font for Numbers",
+        "Row Hover Effect: bg-yellow-500/5"
+      ],
+      "columns": [
+        "S.No (Mono)",
+        "Business Name (Bold)",
+        "Website (Toggle Switch)",
+        "Mobile Number (Mono, +91 format)",
+        "Status (Select Dropdown with Color Coding)",
+        "Actions (Edit/Delete Icons)"
+      ]
+    },
+    "status_badge": {
+      "style": "Pill shape, solid background with black text for high contrast",
+      "mapping": {
+        "Interest": "bg-green-500 text-black",
+        "Not Interest": "bg-red-500 text-black",
+        "Will Call Back": "bg-yellow-400 text-black",
+        "1st Call No Respond": "bg-zinc-700 text-white",
+        "2nd Call No Respond": "bg-zinc-700 text-white",
+        "3rd Call No Respond": "bg-zinc-800 text-zinc-400",
+        "Switchoff": "bg-zinc-900 text-zinc-500 border border-zinc-800"
+      }
+    }
+  },
+  "assets": {
+    "logo_url": "https://customer-assets.emergentagent.com/job_6da2ad34-9c61-4bc8-b958-ad69f62b139d/artifacts/njufdp1h_ChatGPT%20Image%20Dec%209%2C%202025%2C%2001_17_24%20PM.png",
+    "user_avatar": "https://images.unsplash.com/photo-1603252112050-5ee77b4b4fde?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "background_texture": "https://images.unsplash.com/photo-1650034501785-1eacf6564f15?crop=entropy&cs=srgb&fm=jpg&q=85"
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'lucide-react' and 'sonner' if not present.",
+    "2. FONTS: Import 'Chivo', 'Manrope', and 'JetBrains Mono' from Google Fonts in index.css.",
+    "3. THEME: Force DARK MODE. Set 'bg-zinc-950' as the global body background.",
+    "4. TABLE: Do not use a generic card for the table. Make it look like a raw data grid. Use 'border-collapse' and visible borders.",
+    "5. TOGGLE: The 'Website' column must use a Switch component. If 'Yes', show a clickable link icon. If 'No', show a greyed out state.",
+    "6. MOBILE: Ensure the table has 'overflow-x-auto' for mobile responsiveness.",
+    "7. STATUS: The Status dropdown must be directly editable in the table row for speed.",
+    "8. NO AUTH: Build the Dashboard as the '/' route directly."
+  ],
+  "universal_guidelines": {
+    "do_not_use": ["Gradients for text", "Rounded corners > 4px", "Box shadows (use borders instead)"],
+    "must_use": ["Data-testid attributes", "Hover states for all interactive elements", "Toast notifications for CRUD actions"]
+  }
+}
