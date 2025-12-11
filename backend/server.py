@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,10 +6,10 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
-
+from enum import Enum
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -25,46 +25,121 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Status Enum
+class LeadStatus(str, Enum):
+    INTEREST = "Interest"
+    NOT_INTEREST = "Not Interest"
+    WILL_CALL_BACK = "Will Call Back"
+    FIRST_CALL_NO_RESPOND = "1st Call No Respond"
+    SECOND_CALL_NO_RESPOND = "2nd Call No Respond"
+    THIRD_CALL_NO_RESPOND = "3rd Call No Respond"
+    SWITCHOFF = "Switchoff"
 
 # Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
+class Lead(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    business_name: str
+    has_website: bool = False
+    mobile_number: str
+    status: LeadStatus = LeadStatus.FIRST_CALL_NO_RESPOND
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class LeadCreate(BaseModel):
+    business_name: str
+    has_website: bool = False
+    mobile_number: str
+    status: LeadStatus = LeadStatus.FIRST_CALL_NO_RESPOND
 
-# Add your routes to the router instead of directly to app
+class LeadUpdate(BaseModel):
+    business_name: Optional[str] = None
+    has_website: Optional[bool] = None
+    mobile_number: Optional[str] = None
+    status: Optional[LeadStatus] = None
+
+class LeadStats(BaseModel):
+    total: int
+    interest: int
+    not_interest: int
+    will_call_back: int
+    no_respond: int
+    switchoff: int
+
+# Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "AmruthAI CRM API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+# Get all leads
+@api_router.get("/leads", response_model=List[Lead])
+async def get_leads():
+    leads = await db.leads.find({}, {"_id": 0}).to_list(1000)
+    return leads
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+# Get lead stats
+@api_router.get("/leads/stats", response_model=LeadStats)
+async def get_lead_stats():
+    total = await db.leads.count_documents({})
+    interest = await db.leads.count_documents({"status": LeadStatus.INTEREST.value})
+    not_interest = await db.leads.count_documents({"status": LeadStatus.NOT_INTEREST.value})
+    will_call_back = await db.leads.count_documents({"status": LeadStatus.WILL_CALL_BACK.value})
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    no_respond = await db.leads.count_documents({
+        "status": {"$in": [
+            LeadStatus.FIRST_CALL_NO_RESPOND.value,
+            LeadStatus.SECOND_CALL_NO_RESPOND.value,
+            LeadStatus.THIRD_CALL_NO_RESPOND.value
+        ]}
+    })
     
-    return status_checks
+    switchoff = await db.leads.count_documents({"status": LeadStatus.SWITCHOFF.value})
+    
+    return LeadStats(
+        total=total,
+        interest=interest,
+        not_interest=not_interest,
+        will_call_back=will_call_back,
+        no_respond=no_respond,
+        switchoff=switchoff
+    )
+
+# Create a new lead
+@api_router.post("/leads", response_model=Lead)
+async def create_lead(lead_data: LeadCreate):
+    lead = Lead(**lead_data.model_dump())
+    doc = lead.model_dump()
+    await db.leads.insert_one(doc)
+    return lead
+
+# Update a lead
+@api_router.put("/leads/{lead_id}", response_model=Lead)
+async def update_lead(lead_id: str, lead_update: LeadUpdate):
+    update_data = {k: v for k, v in lead_update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.leads.update_one(
+        {"id": lead_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    updated_lead = await db.leads.find_one({"id": lead_id}, {"_id": 0})
+    return Lead(**updated_lead)
+
+# Delete a lead
+@api_router.delete("/leads/{lead_id}")
+async def delete_lead(lead_id: str):
+    result = await db.leads.delete_one({"id": lead_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Lead not found")
+    
+    return {"message": "Lead deleted successfully"}
 
 # Include the router in the main app
 app.include_router(api_router)
