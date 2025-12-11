@@ -5,6 +5,33 @@
     background-color: #09090b;
 }
 
+/* Global border radius */
+.stat-card,
+[data-radix-dialog-content],
+[data-radix-select-content],
+[data-radix-dropdown-menu-content] {
+    border-radius: 0.75rem !important;
+}
+
+/* Table container border radius */
+section.border.border-zinc-800 {
+    border-radius: 0.75rem !important;
+    overflow: hidden;
+}
+
+/* Input and button border radius */
+input,
+textarea,
+[data-radix-select-trigger],
+button {
+    border-radius: 0.5rem !important;
+}
+
+/* Pagination buttons */
+button[class*="h-8"][class*="w-8"] {
+    border-radius: 0.5rem !important;
+}
+
 /* Table overrides */
 .leads-table {
     width: 100%;
@@ -36,7 +63,52 @@
 
 /* Custom select styling in table */
 .leads-table [data-radix-select-trigger] {
-    border-radius: 0 !important;
+    border-radius: 0.375rem !important;
+}
+
+/* Status dropdown styling */
+[data-radix-select-content] {
+    border-radius: 0.75rem !important;
+    padding: 0.5rem !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-radix-select-item] {
+    border-radius: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
+    margin: 0.375rem 0 !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+/* Preserve status colors on hover/focus/highlight - only add subtle brightness effect */
+[data-radix-select-item]:focus,
+[data-radix-select-item]:hover,
+[data-radix-select-item]:active,
+[data-radix-select-item][data-highlighted],
+[data-radix-select-item][data-highlighted="true"],
+[data-radix-select-viewport] [data-radix-select-item]:focus,
+[data-radix-select-viewport] [data-radix-select-item]:hover,
+[data-radix-select-content] [data-radix-select-item]:focus,
+[data-radix-select-content] [data-radix-select-item]:hover,
+[data-radix-select-content] [data-radix-select-item][data-highlighted] {
+    outline: none !important;
+    box-shadow: none !important;
+    filter: brightness(1.15);
+}
+
+/* Checkmark indicator styling */
+[data-radix-select-item-indicator] {
+    color: inherit !important;
+}
+
+/* Override Tailwind accent classes */
+.focus\:bg-accent:focus {
+    background-color: transparent !important;
+}
+
+.hover\:bg-zinc-800:hover {
+    background-color: transparent !important;
 }
 
 /* Stat card animations */
@@ -75,8 +147,8 @@ button[data-testid^="delete-btn"]:hover {
     transform: scale(1.1);
 }
 
-/* Switch custom styling */
-[data-state="checked"] {
+/* Switch custom styling - only target switch component, not select items */
+button[role="switch"][data-state="checked"] {
     background-color: #facc15 !important;
 }
 

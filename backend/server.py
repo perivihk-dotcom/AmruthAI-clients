@@ -27,6 +27,7 @@ api_router = APIRouter(prefix="/api")
 
 # Status Enum
 class LeadStatus(str, Enum):
+    UPDATE_STATUS = "Update Status"
     INTEREST = "Interest"
     NOT_INTEREST = "Not Interest"
     WILL_CALL_BACK = "Will Call Back"
@@ -35,25 +36,64 @@ class LeadStatus(str, Enum):
     THIRD_CALL_NO_RESPOND = "3rd Call No Respond"
     SWITCHOFF = "Switchoff"
 
+# Category Enum
+class BusinessCategory(str, Enum):
+    SUPERMARKET = "Supermarket"
+    CLINIC = "Clinic"
+    BAKERY = "Bakery"
+    PET_SHOP = "Pet Shop"
+    RESTAURANT = "Restaurant"
+    CAFE = "Cafe"
+    PHARMACY = "Pharmacy"
+    SALON = "Salon"
+    GYM = "Gym"
+    HOTEL = "Hotel"
+    REAL_ESTATE = "Real Estate"
+    AUTOMOBILE = "Automobile"
+    ELECTRONICS = "Electronics"
+    CLOTHING = "Clothing"
+    JEWELRY = "Jewelry"
+    FURNITURE = "Furniture"
+    HARDWARE = "Hardware"
+    STATIONERY = "Stationery"
+    TRAVEL = "Travel Agency"
+    EDUCATION = "Education"
+    HOSPITAL = "Hospital"
+    DENTAL = "Dental Clinic"
+    OPTICAL = "Optical"
+    LAUNDRY = "Laundry"
+    PRINTING = "Printing"
+    CATERING = "Catering"
+    EVENT = "Event Management"
+    PHOTOGRAPHY = "Photography"
+    INTERIOR = "Interior Design"
+    CONSTRUCTION = "Construction"
+
 # Define Models
 class Lead(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     business_name: str
+    category: Optional[str] = None
+    location: Optional[str] = None
     has_website: bool = False
     mobile_number: str
-    status: LeadStatus = LeadStatus.FIRST_CALL_NO_RESPOND
+    status: LeadStatus = LeadStatus.UPDATE_STATUS
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class LeadCreate(BaseModel):
     business_name: str = Field(..., min_length=1, description="Business name is required")
+    category: Optional[str] = None
+    location: Optional[str] = None
     has_website: bool = False
     mobile_number: str = Field(..., min_length=1, description="Mobile number is required")
-    status: LeadStatus = LeadStatus.FIRST_CALL_NO_RESPOND
+    status: LeadStatus = LeadStatus.UPDATE_STATUS
 
 class LeadUpdate(BaseModel):
     business_name: Optional[str] = None
+    category: Optional[str] = None
+    location: Optional[str] = None
     has_website: Optional[bool] = None
     mobile_number: Optional[str] = None
     status: Optional[LeadStatus] = None
