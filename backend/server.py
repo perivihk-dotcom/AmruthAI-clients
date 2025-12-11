@@ -35,6 +35,7 @@ class LeadStatus(str, Enum):
     SECOND_CALL_NO_RESPOND = "2nd Call No Respond"
     THIRD_CALL_NO_RESPOND = "3rd Call No Respond"
     SWITCHOFF = "Switchoff"
+    COMPLETED = "Completed"
 
 # Category Enum
 class BusinessCategory(str, Enum):
@@ -80,6 +81,7 @@ class Lead(BaseModel):
     has_website: bool = False
     mobile_number: str
     status: LeadStatus = LeadStatus.UPDATE_STATUS
+    comment: Optional[str] = None
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class LeadCreate(BaseModel):
@@ -89,6 +91,7 @@ class LeadCreate(BaseModel):
     has_website: bool = False
     mobile_number: str = Field(..., min_length=1, description="Mobile number is required")
     status: LeadStatus = LeadStatus.UPDATE_STATUS
+    comment: Optional[str] = None
 
 class LeadUpdate(BaseModel):
     business_name: Optional[str] = None
@@ -97,6 +100,7 @@ class LeadUpdate(BaseModel):
     has_website: Optional[bool] = None
     mobile_number: Optional[str] = None
     status: Optional[LeadStatus] = None
+    comment: Optional[str] = None
 
 class LeadStats(BaseModel):
     total: int

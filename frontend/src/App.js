@@ -68,6 +68,7 @@ const STATUS_OPTIONS = [
   "2nd Call No Respond",
   "3rd Call No Respond",
   "Switchoff",
+  "Completed",
 ];
 
 const CATEGORY_OPTIONS = [
@@ -121,6 +122,8 @@ const getStatusClass = (status) => {
       return "bg-zinc-800 text-zinc-400";
     case "Switchoff":
       return "bg-zinc-900 text-zinc-500 border border-zinc-700";
+    case "Completed":
+      return "bg-purple-600 text-white";
     default:
       return "bg-zinc-700 text-white";
   }
@@ -144,6 +147,8 @@ const getRowBgClass = (status) => {
       return "bg-zinc-800/90 border-l-4 border-l-zinc-600";
     case "Switchoff":
       return "bg-zinc-900 border-l-4 border-l-zinc-700";
+    case "Completed":
+      return "bg-purple-900/70 border-l-4 border-l-purple-500";
     default:
       return "bg-zinc-800/70";
   }
@@ -167,6 +172,8 @@ const getCardBgClass = (status) => {
       return "bg-zinc-800/80 border-zinc-800";
     case "Switchoff":
       return "bg-zinc-900/90 border-zinc-700";
+    case "Completed":
+      return "bg-purple-950/60 border-purple-500";
     default:
       return "bg-zinc-800/50 border-zinc-700";
   }
@@ -212,6 +219,7 @@ function App() {
     has_website: false,
     mobile_number: "",
     status: "Update Status",
+    comment: "",
   });
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -357,6 +365,7 @@ function App() {
       has_website: false,
       mobile_number: "",
       status: "Update Status",
+      comment: "",
     });
   };
 
@@ -369,6 +378,7 @@ function App() {
       has_website: lead.has_website,
       mobile_number: lead.mobile_number,
       status: lead.status,
+      comment: lead.comment || "",
     });
     setIsEditDialogOpen(true);
   };
@@ -615,6 +625,9 @@ function App() {
                   <TableHead className="text-zinc-400 font-semibold uppercase text-xs tracking-wider w-40">
                     Status
                   </TableHead>
+                  <TableHead className="text-zinc-400 font-semibold uppercase text-xs tracking-wider min-w-[150px]">
+                    Comment
+                  </TableHead>
                   <TableHead className="text-zinc-400 font-semibold uppercase text-xs tracking-wider w-24 text-center">
                     Actions
                   </TableHead>
@@ -719,6 +732,19 @@ function App() {
                           ))}
                         </SelectContent>
                       </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        value={lead.comment || ""}
+                        onChange={(e) => {
+                          const newComment = e.target.value;
+                          axios.put(`${API}/leads/${lead.id}`, { comment: newComment })
+                            .then(() => fetchLeads())
+                            .catch(() => toast.error("Failed to update comment"));
+                        }}
+                        placeholder="Add comment..."
+                        className="bg-zinc-800 border-zinc-700 text-white text-sm h-8"
+                      />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2">
@@ -951,6 +977,21 @@ function App() {
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {/* Comment */}
+                    <div className="pt-2">
+                      <Input
+                        value={lead.comment || ""}
+                        onChange={(e) => {
+                          const newComment = e.target.value;
+                          axios.put(`${API}/leads/${lead.id}`, { comment: newComment })
+                            .then(() => fetchLeads())
+                            .catch(() => toast.error("Failed to update comment"));
+                        }}
+                        placeholder="Add comment..."
+                        className="bg-zinc-800 border-zinc-700 text-white text-sm"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -1159,6 +1200,18 @@ function App() {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <label className="text-sm text-zinc-400 mb-2 block">Comment</label>
+              <Input
+                data-testid="input-comment"
+                value={formData.comment}
+                onChange={(e) =>
+                  setFormData({ ...formData, comment: e.target.value })
+                }
+                placeholder="Add a comment..."
+                className="bg-zinc-800 border-zinc-700 text-white"
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button
@@ -1300,6 +1353,18 @@ function App() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <label className="text-sm text-zinc-400 mb-2 block">Comment</label>
+              <Input
+                data-testid="edit-comment"
+                value={formData.comment}
+                onChange={(e) =>
+                  setFormData({ ...formData, comment: e.target.value })
+                }
+                placeholder="Add a comment..."
+                className="bg-zinc-800 border-zinc-700 text-white"
+              />
             </div>
           </div>
           <DialogFooter>
