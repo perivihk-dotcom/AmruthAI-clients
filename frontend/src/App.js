@@ -72,6 +72,7 @@ const STATUS_OPTIONS = [
 ];
 
 const CATEGORY_OPTIONS = [
+  "Shop",
   "Supermarket",
   "Clinic",
   "Bakery",
