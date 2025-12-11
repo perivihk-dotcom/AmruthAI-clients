@@ -735,17 +735,9 @@ function App() {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      <Input
-                        value={lead.comment || ""}
-                        onChange={(e) => {
-                          const newComment = e.target.value;
-                          axios.put(`${API}/leads/${lead.id}`, { comment: newComment })
-                            .then(() => fetchLeads())
-                            .catch(() => toast.error("Failed to update comment"));
-                        }}
-                        placeholder="Add comment..."
-                        className="bg-zinc-800 border-zinc-700 text-white text-sm h-8"
-                      />
+                      <span className="text-zinc-300 text-sm">
+                        {lead.comment || <span className="text-zinc-600">-</span>}
+                      </span>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2">
@@ -980,19 +972,12 @@ function App() {
                     </div>
 
                     {/* Comment */}
-                    <div className="pt-2">
-                      <Input
-                        value={lead.comment || ""}
-                        onChange={(e) => {
-                          const newComment = e.target.value;
-                          axios.put(`${API}/leads/${lead.id}`, { comment: newComment })
-                            .then(() => fetchLeads())
-                            .catch(() => toast.error("Failed to update comment"));
-                        }}
-                        placeholder="Add comment..."
-                        className="bg-zinc-800 border-zinc-700 text-white text-sm"
-                      />
-                    </div>
+                    {/* Comment */}
+                    {lead.comment && (
+                      <div className="pt-2 text-zinc-300 text-sm">
+                        <span className="text-zinc-500">Comment: </span>{lead.comment}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
