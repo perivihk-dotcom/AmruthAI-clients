@@ -47,9 +47,9 @@ class Lead(BaseModel):
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class LeadCreate(BaseModel):
-    business_name: str
+    business_name: str = Field(..., min_length=1, description="Business name is required")
     has_website: bool = False
-    mobile_number: str
+    mobile_number: str = Field(..., min_length=1, description="Mobile number is required")
     status: LeadStatus = LeadStatus.FIRST_CALL_NO_RESPOND
 
 class LeadUpdate(BaseModel):
