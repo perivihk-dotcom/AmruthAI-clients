@@ -110,6 +110,11 @@ class LeadStats(BaseModel):
     no_respond: int
     switchoff: int
 
+# Root route for main app
+@app.get("/")
+async def main_root():
+    return {"status": "success", "message": "AmruthAI CRM Backend Connected Successfully"}
+
 # Routes
 @api_router.get("/")
 async def root():
